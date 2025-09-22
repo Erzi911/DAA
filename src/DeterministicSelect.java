@@ -10,68 +10,59 @@ public class DeterministicSelect {
         return select(arr, 0, arr.length - 1, k);
     }
 
-    private static int select(int[] arr, int left, int right, int k) {
-        if (left == right) {
-            return arr[left];
+    private static int select(int[] arr, int l, int r, int k) {
+        if (l == r) {
+            return arr[l];
         }
-
-        // Find the pivot value using the median-of-medians algorithm
-        int pivotValue = findMedianOfMedians(arr, left, right);
-
-        // Find the index of the pivot value in the current subarray
-        int pivotIndex = -1;
-        for (int i = left; i <= right; i++) {
-            if (arr[i] == pivotValue) {
-                pivotIndex = i;
+        int pvt = MedOfMed(arr, l, r);
+        int pvtIndx = -1;
+        for (int i = l; i <= r; i++) {
+            if (arr[i] == pvt) {
+                pvtIndx = i;
                 break;
             }
         }
-
-        // Partition the array around the pivot
-        int pivotPosition = partition(arr, left, right, pivotIndex);
-
-        if (k == pivotPosition) {
+        int pvtPstn = partition(arr, l, r, pvtIndx);
+        if (k == pvtPstn) {
             return arr[k];
-        } else if (k < pivotPosition) {
-            return select(arr, left, pivotPosition - 1, k);
+        } else if (k < pvtPstn) {
+            return select(arr, l, pvtPstn - 1, k);
         } else {
-            return select(arr, pivotPosition + 1, right, k);
+            return select(arr, pvtPstn + 1, r, k);
         }
     }
-
-    private static int findMedianOfMedians(int[] arr, int left, int right) {
-        int n = right - left + 1;
+    private static int MedOfMed(int[] arr, int l, int r) {
+        int n = r - l + 1;
         if (n <= 5) {
-            Arrays.sort(arr, left, right + 1);
-            return arr[left + n / 2];
+            Arrays.sort(arr, l, r + 1);
+            return arr[l + n / 2];
         }
 
-        int numMedians = (int) Math.ceil((double) n / 5);
-        int[] medians = new int[numMedians];
-        for (int i = 0; i < numMedians; i++) {
-            int subLeft = left + i * 5;
-            int subRight = Math.min(subLeft + 4, right);
-            Arrays.sort(arr, subLeft, subRight + 1);
-            medians[i] = arr[(subLeft + subRight) / 2];
+        int numMed = (int) Math.ceil((double) n / 5);
+        int[] meds = new int[numMed];
+        for (int i = 0; i < numMed; i++) {
+            int ll = l + i * 5;
+            int rr = Math.min(ll + 4, r);
+            Arrays.sort(arr, ll, rr + 1);
+            meds[i] = arr[(ll + rr) / 2];
         }
 
-        // Recursively find the median of the new medians array
-        return select(medians, 0, medians.length - 1, medians.length / 2);
+        return select(meds, 0, meds.length - 1, meds.length / 2);
     }
 
-    private static int partition(int[] arr, int left, int right, int pivotIndex) {
-        int pivotValue = arr[pivotIndex];
-        swap(arr, pivotIndex, right);
+    private static int partition(int[] arr, int l, int r, int pvtIndx) {
+        int pvt = arr[pvtIndx];
+        swap(arr, pvtIndx, r);
 
-        int storeIndex = left;
-        for (int i = left; i < right; i++) {
-            if (arr[i] < pivotValue) {
-                swap(arr, i, storeIndex);
-                storeIndex++;
+        int streIndx = l;
+        for (int i = l; i < r; i++) {
+            if (arr[i] < pvt) {
+                swap(arr, i, streIndx);
+                streIndx++;
             }
         }
-        swap(arr, storeIndex, right);
-        return storeIndex;
+        swap(arr, streIndx, r);
+        return streIndx;
     }
 
     private static void swap(int[] arr, int i, int j) {

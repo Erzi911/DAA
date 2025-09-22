@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class ClosestPair {
+public class clsePair {
 
     public static class Point {
         double x, y;
@@ -16,54 +16,48 @@ public class ClosestPair {
             return "(" + x + ", " + y + ")";
         }
     }
-
     public static class XComparator implements Comparator<Point> {
         @Override
         public int compare(Point p1, Point p2) {
             return Double.compare(p1.x, p2.x);
         }
     }
-
     public static class YComparator implements Comparator<Point> {
         @Override
         public int compare(Point p1, Point p2) {
             return Double.compare(p1.y, p2.y);
         }
     }
-
-    public static double findClosestPair(Point[] points) {
-        Arrays.sort(points, new XComparator());
-        return closestPair(points, 0, points.length - 1);
+    public static double findClosestPair(Point[] pnts) {
+        Arrays.sort(pnts, new XComparator());
+        return clsePair(pnts, 0, pnts.length - 1);
     }
 
-    public static double closestPair(Point[] points, int left, int right) {
-        if (right - left <= 3) {
-            return bruteForce(points, left, right);
+    public static double clsePair(Point[] pnts, int l, int r) {
+        if (r - l <= 3) {
+            return bruteForce(pnts, l, r);
         }
-
-        int mid = left + (right - left) / 2;
-        Point midPoint = points[mid];
-
-        double dL = closestPair(points, left, mid);
-        double dR = closestPair(points, mid + 1, right);
+        int mid = l + (r - l) / 2;
+        Point midPnt = pnts[mid];
+        double dL = clsePair(pnts, l, mid);
+        double dR = clsePair(pnts, mid + 1, r);
         double d = Math.min(dL, dR);
 
-        Point[] strip = new Point[right - left + 1];
+        Point[] strip = new Point[r - l + 1];
         int j = 0;
-        for (int i = left; i <= right; i++) {
-            if (Math.abs(points[i].x - midPoint.x) < d) {
-                strip[j++] = points[i];
+        for (int i = l; i <= r; i++) {
+            if (Math.abs(pnts[i].x - midPnt.x) < d) {
+                strip[j++] = pnts[i];
             }
         }
 
         return Math.min(d, stripClosest(strip, j, d));
     }
-
-    private static double bruteForce(Point[] points, int left, int right) {
+    private static double bruteForce(Point[] pnts, int l, int r) {
         double min = Double.POSITIVE_INFINITY;
-        for (int i = left; i < right; ++i) {
-            for (int j = i + 1; j <= right; ++j) {
-                double dist = distance(points[i], points[j]);
+        for (int i = l; i < r; ++i) {
+            for (int j = i + 1; j <= r; ++j) {
+                double dist = distance(pnts[i], pnts[j]);
                 if (dist < min) {
                     min = dist;
                 }
@@ -71,7 +65,6 @@ public class ClosestPair {
         }
         return min;
     }
-
     private static double stripClosest(Point[] strip, int size, double d) {
         double min = d;
         Arrays.sort(strip, 0, size, new YComparator());
@@ -86,7 +79,6 @@ public class ClosestPair {
         }
         return min;
     }
-
     public static double distance(Point p1, Point p2) {
         return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
