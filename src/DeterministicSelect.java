@@ -1,68 +1,67 @@
 import java.util.Arrays;
-import java.util.Random;
 
 public class DeterministicSelect {
 
-    public static int select(int[] arr, int k) {
+    public static int slct(int[] arr, int k) {
         if (k < 0 || k >= arr.length) {
             throw new IllegalArgumentException("Index k is out of bounds");
         }
-        return select(arr, 0, arr.length - 1, k);
+        return slct(arr, 0, arr.length - 1, k);
     }
-
-    private static int select(int[] arr, int l, int r, int k) {
-        if (l == r) {
-            return arr[l];
-        }
-        int pvt = MedOfMed(arr, l, r);
-        int pvtIndx = -1;
-        for (int i = l; i <= r; i++) {
-            if (arr[i] == pvt) {
-                pvtIndx = i;
-                break;
+    private static int slct(int[] arr, int l, int r, int k) {
+        while (l <= r) {
+            if (r - l + 1 <= 5) {
+                Arrays.sort(arr, l, r + 1);
+                return arr[k];
             }
-        }
-        int pvtPstn = partition(arr, l, r, pvtIndx);
-        if (k == pvtPstn) {
-            return arr[k];
-        } else if (k < pvtPstn) {
-            return select(arr, l, pvtPstn - 1, k);
-        } else {
-            return select(arr, pvtPstn + 1, r, k);
-        }
+            int pvt = getMedofMed(arr, l, r);
+            int pvtIndx = -1;
+            for (int i = l; i <= r; i++) {
+                if (arr[i] == pvt) {
+                    pvtIndx = i;
+                    break;
+                }
+            }
+
+            int pvtPstn = partition(arr, l, r, pvtIndx);
+
+            if (k == pvtPstn) {
+                return arr[k];
+            } else if (k < pvtPstn) {
+                r = pvtPstn - 1;
+            } else {
+                l = pvtPstn + 1;
+            }
+        }return -1;
     }
-    private static int MedOfMed(int[] arr, int l, int r) {
+    private static int getMedofMed(int[] arr, int l, int r) {
         int n = r - l + 1;
-        if (n <= 5) {
-            Arrays.sort(arr, l, r + 1);
-            return arr[l + n / 2];
+        int numGrps = (int) Math.ceil((double) n / 5);
+        int[] meds = new int[numGrps];
+
+        for (int i = 0; i < numGrps; i++) {
+            int grpStrt = l + i * 5;
+            int grpEnd = Math.min(grpStrt + 4, r);
+            Arrays.sort(arr, grpStrt, grpEnd + 1);
+            meds[i] = arr[(grpStrt + grpEnd) / 2];
         }
 
-        int numMed = (int) Math.ceil((double) n / 5);
-        int[] meds = new int[numMed];
-        for (int i = 0; i < numMed; i++) {
-            int ll = l + i * 5;
-            int rr = Math.min(ll + 4, r);
-            Arrays.sort(arr, ll, rr + 1);
-            meds[i] = arr[(ll + rr) / 2];
-        }
-
-        return select(meds, 0, meds.length - 1, meds.length / 2);
+        return slct(meds, 0, meds.length - 1, meds.length / 2);
     }
 
     private static int partition(int[] arr, int l, int r, int pvtIndx) {
-        int pvt = arr[pvtIndx];
+        int pvtVle = arr[pvtIndx];
         swap(arr, pvtIndx, r);
 
-        int streIndx = l;
+        int strIndx = l;
         for (int i = l; i < r; i++) {
-            if (arr[i] < pvt) {
-                swap(arr, i, streIndx);
-                streIndx++;
+            if (arr[i] < pvtVle) {
+                swap(arr, i, strIndx);
+                strIndx++;
             }
         }
-        swap(arr, streIndx, r);
-        return streIndx;
+        swap(arr, strIndx, r);
+        return strIndx;
     }
 
     private static void swap(int[] arr, int i, int j) {

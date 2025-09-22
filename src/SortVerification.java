@@ -31,10 +31,10 @@ public class SortVerification {
         for (int i = 0; i < arrsze; i++) {
             origarr[i] = RANDOM.nextInt(10000);
         }
-        int pntcnt = 1000;
-        clsePair.Point[] origpntarr = new clsePair.Point[pntcnt];
-        for (int i = 0; i < pntcnt; i++) {
-            origpntarr[i] = new clsePair.Point(RANDOM.nextDouble() * 1000, RANDOM.nextDouble() * 1000);
+        int Pointcnt = 1000;
+        clsePair.Point[] origPointarr = new clsePair.Point[Pointcnt];
+        for (int i = 0; i < Pointcnt; i++) {
+            origPointarr[i] = new clsePair.Point(RANDOM.nextDouble() * 1000, RANDOM.nextDouble() * 1000);
         }
         boolean testpass = true;
         //Тест merge sort
@@ -52,16 +52,16 @@ public class SortVerification {
         // Тест deterministic seletc
         int[] selectarr = Arrays.copyOf(origarr, arrsze);
         int k = RANDOM.nextInt(arrsze);
-        int slctElmnt = DeterministicSelect.select(selectarr, k);
+        int slctElmnt = DeterministicSelect.slct(selectarr, k);
         Arrays.sort(origarr);
         int truElmnt = origarr[k];
         if (slctElmnt != truElmnt) {
             testpass = false;
         }
         // Тест close pair
-        clsePair.Point[] closestPairArray = Arrays.copyOf(origpntarr, pntcnt);
+        clsePair.Point[] closestPairArray = Arrays.copyOf(origPointarr, Pointcnt);
         double fnddist = clsePair.findClosestPair(closestPairArray);
-        double truDist = bruteforcecp(origpntarr);
+        double truDist = bruteforcecp(origPointarr);
         if (Math.abs(fnddist - truDist) > 1e-9) {
             testpass = false;
         }
